@@ -1,0 +1,16 @@
+When your adder passes all of the automated tests, prepare a document that discusses its overall design and analyzes its
+
+    exact size
+    exact maximum propagation delay
+    big-O running time
+
+To compute the exact size, simply count the total number of gates used. (You don't need to consider the number of inputs.)
+
+To compute the exact time, compute the propagation delay using the default component delays given by JLS (10 for AND, OR, XOR, 5 for NOT, NAND, NOR, etc.). To see a component's default delay, right-click on it and choose "change timing" from the context menu. (Look at the time; but, don't actually chagne it!)
+
+Your adder's big-O running time describes how the running time will change if you applied your pattern to adders of increasing size. If you used a hybrid design, describe how you would extend your design to build 32-bit and 64-bit adders. (Your technique for extending your hybrid design will determine the big-O running time.)
+
+Finally, add a paragraph or two discussing your adder's overall design. In particular, if you used a hybrid design, list any sub-linear addition algorithms used and how you incorporated them into your adder.
+
+Our 16-bit adder's design is largely inspired from the carry-look ahead adder, which operates on a logrithmic time complexity. By implementing a look-ahead circuit that computes the carry-in value for a sub-adder, all sub-adders are able to run in parallel, which is a strong improvement over the ripple-carry adder operating in linear time. We decided on grouping four 4-bit adders to compose the 16-bit adder because each 4-bit adder's look-ahead circuit would be slightly faster than an 8-bit adder's look-ahead circuit, given that all gates had a maximum of two inputs. 
+We also pursued the shortcut in detecting overflow that was mentioned in class. Knowing that there is two ways to cause overflow in a signed adder (the addition of two positive values resulting in a negative two's complement number or the addition of two negative numbers resulting in a positive two's complement number), we obversed the behavior of the circuit as we caused overflow by using the signal generator component in JLS. We realized that the only way a two positive two's complement numbers (where the most significant bit is 0) could result in output with a negative sign bit would be if there was a carry-in to the most significant bit's column. Given this situation, there would also never be a carry-out from the most significant bit's column because the most significant bit of both operands were 0. So, the cause of this overflow must have occurred from the addition of two operands whose sum exceded 32,767 and entered negative two's complement territory. Likewise, the only way the addition of two negative operands (1 in the most significant bit's place) could result in a positive value is if there was no carry-in to the final adder, resulting in a 0 in the output's most significant bit's place. Because the addition of two negative operands will always produce carry-out from the final adder, overflow can be detected if there is a final carry-out with no carry-in to the final adder.
